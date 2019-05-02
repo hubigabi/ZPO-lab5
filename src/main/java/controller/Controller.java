@@ -5,6 +5,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.converter.IntegerStringConverter;
 import model.TableData;
 
 import java.lang.reflect.Field;
@@ -19,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Controller {
 
-    public Button setValue_bt;
     public TextField setValue_tf;
     @FXML
     private ComboBox<Class> chooseClass_cb;
@@ -67,6 +68,8 @@ public class Controller {
         bean2ObservableList = FXCollections.observableArrayList();
         bean3ObservableList = FXCollections.observableArrayList();
         addDataToTable();
+        tableView.setEditable(true);
+        tableColumn3.setCellFactory(TextFieldTableCell.forTableColumn());
     }
 
     public void addDataToTable() {
@@ -159,8 +162,10 @@ public class Controller {
         chooseObject_cb.getItems().remove(object);
     }
 
-    public void setValue_bt_OnAction(ActionEvent actionEvent) {
+
+    public void onEditCommit_column3(TableColumn.CellEditEvent<TableData, String> tableDataStringCellEditEvent) {
         try {
+            String newValue = tableDataStringCellEditEvent.getNewValue();
             Object object = chooseObject_cb.getSelectionModel().getSelectedItem();
             Method method = tableView.getSelectionModel().getSelectedItem().getSetterMethod();
             method.setAccessible(true);
@@ -173,35 +178,35 @@ public class Controller {
                 Object setterParameter = null;
 
                 if (parameterType.equals(int.class)) {
-                    setterParameter = Integer.parseInt(setValue_tf.getText());
+                    setterParameter = Integer.parseInt(newValue);
                 } else if (parameterType.equals(byte.class)) {
-                    setterParameter = Byte.parseByte(setValue_tf.getText());
+                    setterParameter = Byte.parseByte(newValue);
                 } else if (parameterType.equals(short.class)) {
-                    setterParameter = Short.parseShort(setValue_tf.getText());
+                    setterParameter = Short.parseShort(newValue);
                 } else if (parameterType.equals(long.class)) {
-                    setterParameter = Long.parseLong(setValue_tf.getText());
+                    setterParameter = Long.parseLong(newValue);
                 } else if (parameterType.equals(float.class)) {
-                    setterParameter = Float.parseFloat(setValue_tf.getText());
+                    setterParameter = Float.parseFloat(newValue);
                 } else if (parameterType.equals(double.class)) {
-                    setterParameter = Double.parseDouble(setValue_tf.getText());
+                    setterParameter = Double.parseDouble(newValue);
                 } else if (parameterType.equals(boolean.class)) {
-                    setterParameter = Boolean.parseBoolean(setValue_tf.getText());
+                    setterParameter = Boolean.parseBoolean(newValue);
                 } else if (parameterType.equals(char.class)) {
-                    setterParameter = setValue_tf.getText().charAt(0);
+                    setterParameter = newValue.charAt(0);
                 } else if (parameterType.equals(String.class)) {
-                    setterParameter = setValue_tf.getText();
+                    setterParameter = newValue;
                 } else if (parameterType.equals(LocalDate.class)) {
-                    setterParameter = Instant.ofEpochMilli(Long.parseLong(setValue_tf.getText()))
+                    setterParameter = Instant.ofEpochMilli(Long.parseLong(newValue))
                             .atZone(ZoneId.systemDefault()).toLocalDate();
                 } else if (parameterType.isEnum()) {
-                    setterParameter = Enum.valueOf((Class<Enum>) parameterType, setValue_tf.getText());
+                    setterParameter = Enum.valueOf((Class<Enum>) parameterType, newValue);
                 }
                 method.invoke(object, setterParameter);
 
                 for (int i = 0; i < tableDataObservableList.size(); i++) {
                     TableData tableData = tableDataObservableList.get(i);
                     if (tableData.getSetterMethod().equals(method)) {
-                        tableData.setFieldValue(setterParameter.toString());
+                        tableData.setFieldValue(tableDataStringCellEditEvent.getNewValue());
                         tableDataObservableList.set(i, tableData);
                     }
                 }
@@ -211,5 +216,6 @@ public class Controller {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
+
     }
 }

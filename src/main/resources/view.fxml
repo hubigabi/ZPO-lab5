@@ -5,7 +5,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Controller">
@@ -18,12 +17,10 @@
         <columns>
           <TableColumn fx:id="tableColumn1" prefWidth="47.0" text="No." />
           <TableColumn fx:id="tableColumn2" prefWidth="124.0" text="Field" />
-            <TableColumn fx:id="tableColumn3" prefWidth="107.0" text="Value" />
+            <TableColumn fx:id="tableColumn3" onEditCommit="#onEditCommit_column3" prefWidth="107.0" text="Value" />
         </columns>
       </TableView>
       <Button fx:id="createObject_bt" layoutX="345.0" layoutY="165.0" mnemonicParsing="false" onAction="#createObjectOnAction" text="Create a new object" />
       <Button fx:id="deleteObject_bt" layoutX="345.0" layoutY="215.0" mnemonicParsing="false" onAction="#deleteObjectOnAction" prefHeight="25.0" prefWidth="121.0" text="Delete object" />
-      <TextField fx:id="setValue_tf" layoutX="345.0" layoutY="311.0" prefHeight="25.0" prefWidth="104.0" />
-      <Button fx:id="setValue_bt" layoutX="468.0" layoutY="311.0" mnemonicParsing="false" onAction="#setValue_bt_OnAction" prefHeight="25.0" prefWidth="87.0" text="Set value" />
    </children>
 </AnchorPane>
