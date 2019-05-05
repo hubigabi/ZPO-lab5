@@ -9,10 +9,10 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Controller">
    <children>
-      <ComboBox fx:id="chooseClass_cb" layoutX="130.0" layoutY="37.0" onAction="#chooseClass_cb_onAction" prefWidth="150.0" />
+      <ComboBox fx:id="chooseClass_cb" layoutX="150.0" layoutY="36.0" onAction="#chooseClass_cb_onAction" prefHeight="31.0" prefWidth="174.0" />
       <Label layoutX="50.0" layoutY="41.0" text="Choose class:" />
-      <Label layoutX="345.0" layoutY="98.0" text="Choose object:" />
-      <ComboBox fx:id="chooseObject_cb" layoutX="436.0" layoutY="94.0" onAction="#chooseObject_cb_onAction" prefWidth="150.0" />
+      <Label layoutX="345.0" layoutY="98.0" prefHeight="21.0" prefWidth="109.0" text="Choose object:" />
+      <ComboBox fx:id="chooseObject_cb" layoutX="345.0" layoutY="129.0" onAction="#chooseObject_cb_onAction" prefHeight="31.0" prefWidth="233.0" />
       <TableView fx:id="tableView" layoutX="50.0" layoutY="94.0" prefHeight="242.0" prefWidth="279.0">
         <columns>
           <TableColumn fx:id="tableColumn1" prefWidth="47.0" text="No." />
@@ -20,7 +20,7 @@
             <TableColumn fx:id="tableColumn3" onEditCommit="#onEditCommit_column3" prefWidth="107.0" text="Value" />
         </columns>
       </TableView>
-      <Button fx:id="createObject_bt" layoutX="345.0" layoutY="165.0" mnemonicParsing="false" onAction="#createObjectOnAction" text="Create a new object" />
-      <Button fx:id="deleteObject_bt" layoutX="345.0" layoutY="215.0" mnemonicParsing="false" onAction="#deleteObjectOnAction" prefHeight="25.0" prefWidth="121.0" text="Delete object" />
+      <Button fx:id="createObject_bt" layoutX="345.0" layoutY="228.0" mnemonicParsing="false" onAction="#createObjectOnAction" prefHeight="31.0" prefWidth="152.0" text="Create a new object" />
+      <Button fx:id="deleteObject_bt" layoutX="345.0" layoutY="278.0" mnemonicParsing="false" onAction="#deleteObjectOnAction" prefHeight="31.0" prefWidth="121.0" text="Delete object" />
    </children>
 </AnchorPane>

@@ -1,12 +1,12 @@
 package controller;
 
+import annotation.Name;
 import javafx.collections.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.util.converter.IntegerStringConverter;
 import model.TableData;
 
 import java.lang.reflect.Field;
@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Controller {
 
-    public TextField setValue_tf;
     @FXML
     private ComboBox<Class> chooseClass_cb;
 
@@ -32,12 +31,15 @@ public class Controller {
     private TableView<TableData> tableView;
 
     @FXML
+    @Name("No.")
     private TableColumn<TableData, Integer> tableColumn1;
 
     @FXML
+    @Name("Field")
     private TableColumn<TableData, String> tableColumn2;
 
     @FXML
+    @Name("Value")
     private TableColumn<TableData, String> tableColumn3;
 
     @FXML
@@ -51,7 +53,6 @@ public class Controller {
     private ObservableList bean1ObservableList;
     private ObservableList bean2ObservableList;
     private ObservableList bean3ObservableList;
-
 
     public void initialize() {
         classObservableList = FXCollections.observableArrayList();
@@ -70,6 +71,25 @@ public class Controller {
         addDataToTable();
         tableView.setEditable(true);
         tableColumn3.setCellFactory(TextFieldTableCell.forTableColumn());
+        annotations();
+    }
+
+    private void annotations() {
+        Class clazz = Controller.class;
+        for (Field field : clazz.getDeclaredFields()) {
+            field.setAccessible(true);
+            if (field.isAnnotationPresent(Name.class)) {
+                if (field.getType().equals(TableColumn.class)) {
+                    try {
+                        Name nameAnnotation = field.getAnnotation(Name.class);
+                        TableColumn tableColumn = (TableColumn) field.get(this);
+                        tableColumn.setText(nameAnnotation.value());
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     public void addDataToTable() {
@@ -94,7 +114,6 @@ public class Controller {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
         Field[] fields = aClass.getDeclaredFields();
         Method[] methods = aClass.getDeclaredMethods();
         AtomicInteger runCount = new AtomicInteger(1);
@@ -118,9 +137,7 @@ public class Controller {
 
     @FXML
     void chooseObject_cb_onAction(ActionEvent event) {
-
         Object object = chooseObject_cb.getSelectionModel().getSelectedItem();
-
         if (object != null) {
             for (int i = 0; i < tableDataObservableList.size(); i++) {
                 try {
@@ -128,7 +145,7 @@ public class Controller {
                     Method method = tableData.getGetterMethod();
                     method.setAccessible(true);
                     Object returnValue = Optional.ofNullable(method.invoke(object))
-                            .orElse( "");
+                            .orElse("");
                     tableData.setFieldValue(returnValue.toString());
                     tableDataObservableList.set(i, tableData);
                 } catch (IllegalAccessException e) {
@@ -216,6 +233,5 @@ public class Controller {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-
     }
 }
