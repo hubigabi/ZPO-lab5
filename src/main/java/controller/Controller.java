@@ -13,11 +13,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.time.format.DateTimeFormatter;
 
 public class Controller {
 
@@ -123,12 +122,9 @@ public class Controller {
         Method setterMethod;
 
         for (Field field : fields) {
-
             String methodName = field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
-
             getterMethod = Arrays.stream(methods).filter(method -> method.getName().contains("get" + methodName)).findFirst().get();
             setterMethod = Arrays.stream(methods).filter(method -> method.getName().contains("set" + methodName)).findFirst().get();
-
             tableDataObservableList.add(new TableData(runCount.getAndIncrement(),
                     field, field.getName(), "", getterMethod, setterMethod));
         }
@@ -213,18 +209,38 @@ public class Controller {
                 } else if (parameterType.equals(String.class)) {
                     setterParameter = newValue;
                 } else if (parameterType.equals(LocalDate.class)) {
-                    setterParameter = Instant.ofEpochMilli(Long.parseLong(newValue))
-                            .atZone(ZoneId.systemDefault()).toLocalDate();
+                    setterParameter = LocalDate.parse(newValue, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                 } else if (parameterType.isEnum()) {
-                    setterParameter = Enum.valueOf((Class<Enum>) parameterType, newValue);
+                    try {
+                        Method method1 = parameterType.getMethod("values");
+                        Object[] objects = (Object[]) method1.invoke(null);
+                        List<String> stringList = new ArrayList<>();
+                        for (Object o : objects) {
+                            stringList.add(o.toString());
+                        }
+                        if (stringList.contains(newValue))
+                            setterParameter = Enum.valueOf((Class<Enum>) parameterType, newValue);
+                        else
+                            System.out.println("Wrong value for Enum!");
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    }
                 }
                 method.invoke(object, setterParameter);
 
                 for (int i = 0; i < tableDataObservableList.size(); i++) {
                     TableData tableData = tableDataObservableList.get(i);
                     if (tableData.getSetterMethod().equals(method)) {
-                        tableData.setFieldValue(tableDataStringCellEditEvent.getNewValue());
-                        tableDataObservableList.set(i, tableData);
+                        Method getterMethod = tableData.getGetterMethod();
+                        method.setAccessible(true);
+                        Object o = getterMethod.invoke(object);
+                        if (o != null) {
+                            tableData.setFieldValue(getterMethod.invoke(object).toString());
+                            tableDataObservableList.set(i, tableData);
+                        } else {
+                            tableData.setFieldValue("");
+                            tableDataObservableList.set(i, tableData);
+                        }
                     }
                 }
             }
